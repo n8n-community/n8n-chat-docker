@@ -154,45 +154,6 @@ services:
     restart: unless-stopped
 ```
 
-### URL Parameters
-
-You can also pass the webhook URL as a URL parameter:
-```
-http://localhost:3000?webhook=https://your-n8n-instance.com/webhook/your-webhook-id
-```
-
-### Chat Widget Configuration
-
-The chat widget supports extensive customization through its configuration object. You can modify the HTML files to customize:
-
-#### Basic Configuration
-```javascript
-createChat({
-    webhookUrl: 'your-webhook-url',
-    mode: 'window', // or 'fullscreen'
-    target: '#n8n-chat',
-    showWelcomeScreen: true,
-    // ... other options
-});
-```
-
-#### Custom Messages & Branding
-```javascript
-initialMessages: [
-    'Hello! 👋',
-    'I\'m your AI assistant. How can I help you today?'
-],
-i18n: {
-    en: {
-        title: 'Your Custom Title',
-        subtitle: 'Your Custom Subtitle',
-        footer: 'Powered by your brand',
-        getStarted: 'Start Chatting',
-        inputPlaceholder: 'Type your message...',
-    },
-},
-```
-
 ## 🎨 Chat Widget Customization
 
 The chat widget can be extensively customized to match your brand and requirements. Here are the main customization options:
