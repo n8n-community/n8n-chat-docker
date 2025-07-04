@@ -1,0 +1,39 @@
+name: Update Documentation
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Update README with latest release
+      run: |
+        # Get the latest release tag
+        LATEST_TAG=$(git describe --tags --abbrev=0)
+        
+        # Update README with the new tag in examples
+        sed -i "s|ghcr.io/${{ github.repository }}:.*|ghcr.io/${{ github.repository }}:${LATEST_TAG}|g" README.md
+        
+        # Check if there are changes
+        if git diff --quiet; then
+          echo "No changes to commit"
+          exit 0
+        fi
+        
+        # Commit changes
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add README.md
+        git commit -m "docs: update Docker image version to ${LATEST_TAG}"
+        git push

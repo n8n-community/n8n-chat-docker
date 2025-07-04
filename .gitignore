@@ -1,0 +1,33 @@
+# Node.js dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build output
+dist/
+build/
+
+# Environment files
+.env
+.env.*local
+
+# IDE / editor settings
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# macOS
+.DS_Store
+
+# Docker overrides & credentials
+docker-compose.yml
+*.pem
+*.key
+
+# Docker volumes / persistent data
+data/

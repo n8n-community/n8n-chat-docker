@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>n8n Chat Widget</title>
+    <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+        
+        .description {
+            color: #666;
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        
+        .webhook-info {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .webhook-info h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+        
+        .webhook-url {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            word-break: break-all;
+            margin: 10px 0;
+        }
+        
+        .links {
+            margin-top: 30px;
+        }
+        
+        .links a {
+            display: inline-block;
+            margin: 0 10px;
+            padding: 12px 24px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: background 0.3s;
+        }
+        
+        .links a:hover {
+            background: #0056b3;
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status.warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .config-section {
+            text-align: left;
+            margin-top: 30px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        
+        .config-section h3 {
+            margin-top: 0;
+        }
+        
+        .config-section code {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 n8n Chat Widget</h1>
+        <p class="description">
+            This is a containerized n8n chat widget ready to connect to your n8n webhook. 
+            The chat widget will appear in the bottom right corner once configured.
+        </p>
+        
+        <div class="webhook-info">
+            <h3>📋 Setup Instructions:</h3>
+            <ol>
+                <li>Create a workflow in n8n with a <strong>Chat Trigger</strong> node</li>
+                <li>Set the Chat Trigger to <strong>"Make Chat Publicly Available"</strong></li>
+                <li>Copy the webhook URL from your Chat Trigger node</li>
+                <li>Replace <code>YOUR_WEBHOOK_URL_HERE</code> in the configuration below</li>
+                <li>Add your domain to the <strong>"Allowed Origins (CORS)"</strong> field in the Chat Trigger</li>
+            </ol>
+        </div>
+        
+        <div class="config-section">
+            <h3>🔧 Current Configuration:</h3>
+            <p><strong>Webhook URL:</strong></p>
+            <div class="webhook-url" id="webhook-url">Not configured</div>
+            <p><strong>Mode:</strong> Window (chat button in bottom right)</p>
+            <p><strong>Status:</strong> <span id="chat-status" class="status warning">Waiting for configuration</span></p>
+        </div>
+        
+        <div class="links">
+            <a href="/fullscreen">Open Fullscreen Chat</a>
+            <a href="https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-langchain.chattrigger/" target="_blank">
+                Chat Trigger Docs
+            </a>
+        </div>
+    </div>
+
+    <!-- n8n Chat Widget Container -->
+    <div id="n8n-chat"></div>
+
+    <script type="module">
+        import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
+        
+        // Get webhook URL from environment or URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const webhookUrl = urlParams.get('webhook') || 
+                          window.WEBHOOK_URL || 
+                          'YOUR_WEBHOOK_URL_HERE';
+        
+        // Update UI with current webhook URL
+        document.getElementById('webhook-url').textContent = webhookUrl;
+        
+        if (webhookUrl && webhookUrl !== 'YOUR_WEBHOOK_URL_HERE') {
+            try {
+                createChat({
+                    webhookUrl: webhookUrl,
+                    mode: 'window',
+                    target: '#n8n-chat',
+                    initialMessages: [
+                        'Hello! 👋',
+                        'I\'m your n8n AI assistant. How can I help you today?'
+                    ],
+                    showWelcomeScreen: true,
+                    i18n: {
+                        en: {
+                            title: 'n8n Assistant',
+                            subtitle: 'Powered by n8n workflows',
+                            footer: '',
+                            getStarted: 'Start Chatting',
+                            inputPlaceholder: 'Type your message...',
+                        },
+                    },
+                });
+                
+                document.getElementById('chat-status').textContent = 'Chat widget loaded successfully!';
+                document.getElementById('chat-status').className = 'status success';
+                document.getElementById('chat-status').style.background = '#d4edda';
+                document.getElementById('chat-status').style.color = '#155724';
+                document.getElementById('chat-status').style.border = '1px solid #c3e6cb';
+                
+            } catch (error) {
+                console.error('Failed to initialize chat:', error);
+                document.getElementById('chat-status').textContent = 'Error loading chat widget';
+                document.getElementById('chat-status').className = 'status error';
+            }
+        } else {
+            document.getElementById('chat-status').textContent = 'Please configure webhook URL';
+            document.getElementById('chat-status').className = 'status warning';
+        }
+    </script>
+</body>
+</html> 
