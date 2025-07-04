@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: n8n-chat-config
+  labels:
+    app: n8n-chat
+data:
+  webhook-url: "https://your-n8n-instance.com/webhook/your-webhook-id"
+  chat-title: "Customer Support"
+  chat-subtitle: "We're here to help"
+  initial-messages: "Welcome! 👋, How can I assist you today?, Feel free to ask anything"

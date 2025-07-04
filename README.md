@@ -5,6 +5,7 @@ A containerized n8n chat widget that can be easily deployed and connected to you
 ## 🚀 Features
 
 - **Easy Deployment**: Containerized with Docker for simple deployment
+- **Kubernetes Ready**: Production-ready Kubernetes manifests with auto-scaling and high availability
 - **Environment Variable Configuration**: Customize title, subtitle, and messages without code changes
 - **Optimized Container**: Alpine-based image for minimal size and security
 - **Multiple Modes**: Window mode (chat button) and fullscreen chat interface
@@ -86,7 +87,21 @@ docker run -d \
   n8n-chat
 ```
 
-#### Option D: Without Docker
+#### Option D: Kubernetes Deployment
+
+For production environments, deploy to Kubernetes:
+
+```bash
+# Deploy to Kubernetes
+kubectl apply -f k8s/
+
+# Access via port-forward for testing
+kubectl port-forward service/n8n-chat-service 3000:80 -n n8n-chat
+```
+
+See the [k8s/README.md](k8s/README.md) for detailed Kubernetes deployment instructions.
+
+#### Option E: Without Docker
 
 ```bash
 npm install
@@ -364,6 +379,14 @@ n8n-chat-container/
 ├── public/
 │   ├── index.html        # Main chat page (window mode)
 │   └── fullscreen.html   # Fullscreen chat page
+├── k8s/                  # Kubernetes deployment manifests
+│   ├── README.md         # Kubernetes deployment guide
+│   ├── deployment.yaml   # Application deployment
+│   ├── service.yaml      # Kubernetes service
+│   ├── ingress.yaml      # Ingress configuration
+│   ├── configmap.yaml    # Configuration management
+│   ├── secret.yaml       # Secure configuration
+│   └── namespace.yaml    # Namespace configuration
 └── README.md            # This file
 ```
 

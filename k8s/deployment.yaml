@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: n8n-chat
+  labels:
+    app: n8n-chat
+    version: v1.0.0
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: n8n-chat
+  template:
+    metadata:
+      labels:
+        app: n8n-chat
+    spec:
+      containers:
+      - name: n8n-chat
+        image: ghcr.io/ppyly-org/n8n-chat-docker:latest
+        ports:
+        - containerPort: 3000
+          name: http
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "3000"
+        - name: WEBHOOK_URL
+          valueFrom:
+            configMapKeyRef:
+              name: n8n-chat-config
+              key: webhook-url
+        - name: CHAT_TITLE
+          valueFrom:
+            configMapKeyRef:
+              name: n8n-chat-config
+              key: chat-title
+        - name: CHAT_SUBTITLE
+          valueFrom:
+            configMapKeyRef:
+              name: n8n-chat-config
+              key: chat-subtitle
+        - name: INITIAL_MESSAGES
+          valueFrom:
+            configMapKeyRef:
+              name: n8n-chat-config
+              key: initial-messages
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 2
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 1001
+          runAsGroup: 1001
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+      securityContext:
+        fsGroup: 1001
+      restartPolicy: Always
